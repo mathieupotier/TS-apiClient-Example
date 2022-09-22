@@ -1,15 +1,15 @@
 import React from 'react'
+
 import {ClientInterface} from "../api/Client";
-import {GetItemsApiResponse, GetUsersApiResponse} from "../api/responses";
+import {GetUsersApiResponse} from "../api/responses";
+
+import User from "../entity/user";
 
 type Props = {
     getClient: () => ClientInterface
 }
 type State = {
-    values: {
-        id: string
-        value: string
-    }
+    values: User[]
 }
 
 export default class ApiCapable extends React.Component<Props, State> {
@@ -17,21 +17,16 @@ export default class ApiCapable extends React.Component<Props, State> {
     constructor(props: Readonly<Props> | Props) {
         super(props);
         this.state = {
-            userResponse: null
+            values: []
         }
     }
 
     componentDidMount(): void {
-        this.props.getClient().getAllItems()
-            .then((response: GetItemsApiResponse) => {
+        this.props.getClient().getAllUsers()
+            .then((response: GetUsersApiResponse) => {
                 this.setState({
                     ...this.state,
-                    values: response.map(item => {
-                        return {
-                            id: item.id,
-                            value: item.name
-                        }
-                    })
+                    values: response.map(user => User.fromResponse(user))
                 })
             })
     }
